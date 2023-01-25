@@ -1,1 +1,11 @@
-site_name: My Docs
+site_name: Simple AWS EKS Example
+site_url: https://github.com/howtosteps/aws-eks/site/
+nav:
+  - Introduction: index.md
+  - Prerequisites: prerequisites.md
+  - Local environment: local-environment.md
+  - Local installations : local-installations.md
+  - Create EKS cluster: create-cluster.md
+  - Extend EKS cluster: extend-cluster.md
+  - Clean up : clean-up.md
+theme: readthedocs

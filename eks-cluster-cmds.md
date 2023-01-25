@@ -11,7 +11,7 @@ eksctl create cluster --help
 create cluster by using yaml config file:
 
 ```bash
-eksctl create cluster -f eks-course.yaml
+eksctl create cluster -f eks-cluster.yaml
 ```
 
 ## post-install check
@@ -20,4 +20,11 @@ eksctl also creates the config file for _kubectl_. This means we can immediately
 
 ```
 kubectl get nodes
+```
+
+## delete cluster 
+
+Delete cluster
+```
+eksctl delete cluster --region=us-east-1 --name=eks-cluster
 ```

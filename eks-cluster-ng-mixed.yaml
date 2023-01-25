@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: EKS-course-cluster-2
+  name: eks-cluster
   region: us-east-1
 
 nodeGroups:
@@ -16,7 +16,7 @@ nodeGroups:
     maxSize: 4
     instanceDistribution:
        maxPrice: 0.2
-       instanceType: ["t2.nano"]
+       instanceType: t2.nano
        onDemandBaseCapacity: 0
        onDemandPercentageAboveBaseCapacity: 50
     ssh:

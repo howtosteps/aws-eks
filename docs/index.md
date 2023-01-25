@@ -1,31 +1,29 @@
-# Welcome to MkDocs
+# Introduction
+This tutorial describes how-to-steps to setup a simple EKS cluster. This tutorial will provide steps for following: 
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+* How to setup a simple kubernetes cluster using eksctl 
+* How to setup kubetctl to access and manage your cluster 
+* How to setup a stateless application
+* How to setup a stateful application
 
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
-
+## Application Structure
 ```
-PS C:\Users\aniru\workspace\github\aws-eks> kubectl get nodes
-Kubeconfig user entry is using deprecated API version client.authentication.k8s.io/v1alpha1. Run 'aws eks update-kubeconfig' to update.
-NAME                             STATUS   ROLES    AGE   VERSION
-ip-192-168-21-105.ec2.internal   Ready    <none>   71m   v1.22.15-eks-fb459a0
-ip-192-168-54-187.ec2.internal   Ready    <none>   71m   v1.22.15-eks-fb459a0
+  |── docs                      # Contains edited nginx configuration file that will be copied to the image
+  |    ├── img                  # Contains all images referenced in mkdocs
+  |    ├── *.md                 # Other mkdocs .md files
+  ├── mkdocs.yml                # YAML for for mkdocs
+  ├── .gitattributes
+  |
+  ├── eks-cluster.yaml          # Yaml file for a simple cluster
+  ├── eks-cluster-ng-mixed.yaml # Yaml file for cluster with different node groups
+  ├── eks-cluster-cmds.md       # List of commands to run 
+  ├── eks-cluster-ng-mixed.md   # List of commands to run 
+  |
+  ├── README.md                 # Standard README.md file
 ```
 
-```
-S C:\Users\aniru\workspace\github\aws-eks> eksctl get nodegroup --cluster eks-cluster-ng
-CLUSTER         NODEGROUP       STATUS          CREATED                 MIN SIZE        MAX SIZE        DESIRED CAPACITY        INSTANCE TYPE   IMAGE ID                ASG NAME                                       TYPE
-eks-cluster-ng  ng-1            CREATE_COMPLETE 2023-01-25T00:22:41Z    2               2               2                       t2.nano         ami-03a30cc1dda93f173   eksctl-eks-cluster-ng-nodegroup-ng-1-NodeGroup-6387ICJKD3BS     unmanaged
-```
+
+## Credits
+Although I have leaned on information from various sources on the web ( including ChatGPT ), I did find this Udemy tutorial very useful in helping me craft this summarized how-to-steps :
+
+[Amazon EKS Starter: Docker on AWS EKS with Kubernetes](https://www.udemy.com/course/amazon-eks-starter-kubernetes-on-aws/)
