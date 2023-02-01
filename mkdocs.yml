@@ -7,5 +7,6 @@ nav:
   - Local installations : local-installations.md
   - Create EKS cluster: create-cluster.md
   - Extend EKS cluster: extend-cluster.md
+  - Create stateless app: create-stateless-app.md
   - Clean up : clean-up.md
 theme: readthedocs

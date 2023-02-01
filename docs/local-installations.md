@@ -1,7 +1,7 @@
 # Local Installations
 
 ## Install AWS CLI
-* Follow the instructions from this page: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+* Follow the instructions from this page: [Installing or updating the latest version of the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * Test 
 ```
     PS C:\Users\aniru\.aws> aws --version
@@ -9,7 +9,7 @@
 ```
 
 ## Install eksctl
-* Follow the installation instructions from here : https://eksctl.io/introduction/#installation
+* Follow the installation instructions from here : [Eksctl installation](https://eksctl.io/introduction/#installation)
 * Test
 ```
     PS C:\Users\aniru\.aws> eksctl version  
@@ -17,7 +17,7 @@
 ```
 
 ## Install kubectl
-* Follow instructions from here: https://kubernetes.io/docs/tasks/tools/
+* Follow instructions from here: [Kuberctl installation](https://kubernetes.io/docs/tasks/tools/)
 * Test 
 ```
     PS C:\Users\aniru\.aws> kubectl version --client
