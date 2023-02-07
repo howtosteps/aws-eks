@@ -2,6 +2,22 @@
 # Setup sample guestbook app
 * based on [Kubernetes Guestbook](https://github.com/kubernetes/examples/tree/master/guestbook)
 
+![Screenshot](img/eks-stateless-app.png)
+
+## Create new cluster
+
+Please note that for the following steps we are assuming that the cluster is already running with nodegroup `ng-1` from initial steps
+```
+eksctl create nodegroup --config-file=eks-cluster-autoscalar.yaml
+```
+
+Let's delete the 
+
+```
+eksctl delete nodegroup -f eks-course.yaml --include='ng-1' --approve
+```
+
+
 ## Redis master
 deploy the master Redis pod and a _service_ on top of it:
 ```

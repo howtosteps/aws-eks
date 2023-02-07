@@ -5,6 +5,7 @@ This tutorial describes how-to-steps to setup a simple EKS cluster. This tutoria
 * How to setup kubetctl to access and manage your cluster 
 * How to setup a stateless application
 * How to setup a stateful application
+* Demo to Murali Achanta
 
 ## Application Structure
 ```
