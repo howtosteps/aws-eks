@@ -2,7 +2,7 @@
 In this section, we will create a simple cluster using `eksctl`
 
 ## Create Yaml file 
-The first step is to create a .yaml file. Let's call it `eks-cluster-ng.yaml`. Copy the following contents :  
+Create folder `cluster-ng`. The first step is to create a simple yaml file in this folder. Let's call it `eks-cluster.yaml`. Copy the following contents to it:  
 
 ```
 apiVersion: eksctl.io/v1alpha5
@@ -20,7 +20,7 @@ nodeGroups:
       publicKeyName: eks-course
 ```
 
-This will tell EKS cluster to:
+This tells EKS to:
 
 * Create a cluster `eks-cluster-ng` in region us-east-1
 * Call the name of the nodegroup : ng-1
@@ -47,6 +47,9 @@ Now let's check the EC2 console. You will see 2 instances :
 ![Screenshot](img/eks-cluster-ec2-instance.jpg)
 
 Let's use the `eksctl get nodegroup` command to get the details of the nodegroup we just created  : 
+```
+eksctl get nodegroup --cluster eks-cluster-ng
+```
 
 ```
 S C:\Users\aniru\workspace\github\aws-eks> eksctl get nodegroup --cluster eks-cluster-ng
@@ -55,6 +58,10 @@ eks-cluster-ng  ng-1            CREATE_COMPLETE 2023-01-25T00:22:41Z    2       
 ```
 
 Let's use the `kubectl` command to get the nodes : 
+```
+kubectl get nodes
+```
+
 ```
 PS C:\Users\aniru\workspace\github\aws-eks> kubectl get nodes
 Kubeconfig user entry is using deprecated API version client.authentication.k8s.io/v1alpha1. Run 'aws eks update-kubeconfig' to update.

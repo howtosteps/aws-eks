@@ -2,29 +2,35 @@
 This tutorial describes how-to-steps to setup a simple EKS cluster. This tutorial will provide steps for following: 
 
 * How to setup a simple kubernetes cluster using eksctl 
-* How to setup kubetctl to access and manage your cluster 
+* How to add new nodegroups
+* How to add autoscaler to dynamically scale in and out 
 * How to setup a stateless application
-* How to setup a stateful application
-* Demo to Murali Achanta
 
 ## Application Structure
 ```
-  |── docs                      # Contains edited nginx configuration file that will be copied to the image
+  |── docs                      # folder contains all the mkdocs files
   |    ├── img                  # Contains all images referenced in mkdocs
   |    ├── *.md                 # Other mkdocs .md files
-  ├── mkdocs.yml                # YAML for for mkdocs
+  ├── mkdocs.yml                # Yaml for for mkdocs
   ├── .gitattributes
   |
-  ├── eks-cluster.yaml          # Yaml file for a simple cluster
-  ├── eks-cluster-ng-mixed.yaml # Yaml file for cluster with different node groups
-  ├── eks-cluster-cmds.md       # List of commands to run 
-  ├── eks-cluster-ng-mixed.md   # List of commands to run 
+  |── cluster-ng                        # Folder containing a simple EKS cluster with on-demand instances
+  |    ├── eks-cluster.yaml             # Yaml file for a simple cluster
+  |    ├── eks-cluster-cmds.md          # List of commands to run 
+  |── cluster-ng-mixed                  # Folder containing an EKS cluster with spot & on-demand instances
+  |    ├── eks-cluster.yaml             # Yaml file for cluster with different node groups
+  |── cluster-autoscaler                # folder containing a EKS cluster with auto-scaler
+  |    ├── eks-cluster.yaml             # Yaml file for a simple cluster
+  |    ├── eks-cluster-cmds.md          # List of commands to run 
+  |── cluster-stateless-app             # Folder containing a simple stateless example from kubernetes.io
+  |    ├── frontend-deployment.yaml     # Yaml file for frontend deployment
+  |    ├── frontend-service.yaml        # Yaml file for frontend service
   |
   ├── README.md                 # Standard README.md file
 ```
 
 
 ## Credits
-Although I have leaned on information from various sources on the web ( including ChatGPT ), I did find this Udemy tutorial very useful in helping me craft this summarized how-to-steps :
+Although much of the material has been sources from various sources on the web ( including ChatGPT ), I did find this Udemy tutorial very useful in crafting these how-to-steps :
 
 [Amazon EKS Starter: Docker on AWS EKS with Kubernetes](https://www.udemy.com/course/amazon-eks-starter-kubernetes-on-aws/)

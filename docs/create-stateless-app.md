@@ -1,6 +1,19 @@
 # Create Stateless App
-# Setup sample guestbook app
-* based on [Kubernetes Guestbook](https://github.com/kubernetes/examples/tree/master/guestbook)
+In this section we will :
+
+* Deploy backend resources
+* Deploy frontend resources
+* Scale pods up/down 
+* Perform chaos testing
+* Application will be accessible from AWS Load Balancer
+
+## Setup sample guestbook app
+This example is based on [Kubernetes Guestbook](https://github.com/kubernetes/examples/tree/master/guestbook). The application consists of :
+
+* A Redis backend with a single leader pod for Writes & multiple follower pods for Reads
+* A frontend app ( Guestbook app ) in PHP loadbalanced to public using a load balancer
+* Guestbook app reads load balanced to multiple redis followers (reads)
+* Guestbook app writes directed towards single redis leader (writes)
 
 ![Screenshot](img/eks-stateless-app.png)
 
@@ -10,13 +23,6 @@ Please note that for the following steps we are assuming that the cluster is alr
 ```
 eksctl create nodegroup --config-file=eks-cluster-autoscalar.yaml
 ```
-
-Let's delete the 
-
-```
-eksctl delete nodegroup -f eks-course.yaml --include='ng-1' --approve
-```
-
 
 ## Redis master
 deploy the master Redis pod and a _service_ on top of it:

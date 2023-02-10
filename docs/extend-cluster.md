@@ -5,7 +5,9 @@ In this section we will extend the cluster by adding a nodegroup that contains a
 * Spot instances
 
 ## Define Yaml file 
-We will now extend the cluster with a new file `eks-cluster-ng-mixed.yaml`. This will contain the the contents of previous cluster file `eks-cluster-ng.yaml` and will add a new nodegroup `ng-mixed`. Copy the following contents :  
+Create folder `cluster-ng-mixed`. We will now extend the cluster by adding a nodegroup to file `eks-cluster.yaml`. The file adds a new nodegroup `ng-mixed`. 
+
+Copy the following contents :  
 
 ```
 apiVersion: eksctl.io/v1alpha5
@@ -33,7 +35,7 @@ nodeGroups:
       publicKeyName: eks-course
 
 ```
-This tells `eksctl` to : 
+This tells EKS to : 
 
 * Add a new nodegroup `ng-mixed`
 * Set min & max size
@@ -47,13 +49,13 @@ eksctl get cluster
 ```
 Let's add the new nodegroup :
 ```
-eksctl create nodegroup --config-file=eks-cluster-ng-mixed.yaml --include='ng-mixed'
+eksctl create nodegroup --config-file=eks-cluster.yaml --include='ng-mixed'
 ```
 
 ## Delete nodegroup  
 Now let's drain the `ng-mixed` nodegroup we just created so we don't incur additional costs :
 ```
-eksctl delete nodegroup --config-file=eks-cluster-ng-mixed.yaml --include='ng-mixed' --approve
+eksctl delete nodegroup --config-file=eks-cluster.yaml --include='ng-mixed' --approve
 ```
 
 

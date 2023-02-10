@@ -5,8 +5,10 @@ nav:
   - Prerequisites: prerequisites.md
   - Local environment: local-environment.md
   - Local installations : local-installations.md
-  - Create EKS cluster: create-cluster.md
-  - Extend EKS cluster: extend-cluster.md
+  - Create cluster: create-cluster.md
+  - Extend cluster: extend-cluster.md
+  - Create cluster with autoscaler: create-cluster-autoscaler.md
+  - Test autoscaler with Nginx : test-cluster-autoscaler.md
   - Create stateless app: create-stateless-app.md
   - Clean up : clean-up.md
 theme: readthedocs

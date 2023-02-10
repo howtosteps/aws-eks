@@ -24,7 +24,7 @@ kubectl get nodes
 
 ## delete cluster 
 
-Delete cluster
+delete cluster
 ```
 eksctl delete cluster --region=us-east-1 --name=eks-cluster
 ```

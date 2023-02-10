@@ -2,14 +2,14 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: eks-cluster-autoscalar
+  name: eks-cluster-ng
   region: us-east-1
 
 nodeGroups:
-  - name: scale-AWS 
-    instanceType: t2.small
+  - name: scale-east1c
+    instanceType: t2.nano
     desiredCapacity: 1
-    maxSize: 3
+    maxSize: 2
     availabilityZones: ["us-east-1c"]
     iam:
       withAddonPolicies:
@@ -17,29 +17,27 @@ nodeGroups:
     labels:
       nodegroup-type: stateful-east1c
       instance-type: onDemand
-    ssh: # use existing EC2 key
-      publicKeyName: eks-course
-  - name: scale-east1c
+  - name: scale-east1d
     instanceType: t2.nano
     desiredCapacity: 1
     maxSize: 3
-    availabilityZones: ["us-east-1c"]
+    availabilityZones: ["us-east-1d"]
     iam:
       withAddonPolicies:
         autoScaler: true
     labels:
-      nodegroup-type: stateful-east1c
+      nodegroup-type: stateful-east1d
       instance-type: onDemand
     ssh: # use existing EC2 key
       publicKeyName: eks-course
   - name: scale-spot
     desiredCapacity: 1
-    maxSize: 3
+    maxSize: 4
     instancesDistribution:
-      instanceTypes: ["t2.micro", "t2.nano"]
+      instanceTypes: ["t2.micro", "t2.small"]
       onDemandBaseCapacity: 0
       onDemandPercentageAboveBaseCapacity: 0
-    availabilityZones: ["us-east-1c", "us-east-1d"]
+    availabilityZones: ["us-east-1a","us-east-1b"]
     iam:
       withAddonPolicies:
         autoScaler: true
@@ -49,4 +47,4 @@ nodeGroups:
     ssh: 
       publicKeyName: eks-course
 
-availabilityZones: ["us-east-1c", "us-east-1d"]
+availabilityZones: ["us-east-1a","us-east-1b","us-east-1c", "us-east-1d"]
