@@ -50,7 +50,7 @@ nodeGroups:
       instanceTypes: ["t2.micro", "t2.small"]
       onDemandBaseCapacity: 0
       onDemandPercentageAboveBaseCapacity: 0
-    availabilityZones: ["us-east-1a","us-east-1b"]
+    availabilityZones: ["us-east-1a","us-east-1c"]
     iam:
       withAddonPolicies:
         autoScaler: true
@@ -60,7 +60,7 @@ nodeGroups:
     ssh: 
       publicKeyName: eks-course
 
-availabilityZones: ["us-east-1a","us-east-1b","us-east-1c", "us-east-1d"]
+availabilityZones: ["us-east-1a","us-east-1c", "us-east-1d"]
 ```
 
 This will tell EKS to :

@@ -5,10 +5,9 @@ In this section we will :
 * Deploy frontend resources
 * Scale pods up/down 
 * Perform chaos testing
-* Application will be accessible from AWS Load Balancer
 
 ## Setup sample guestbook app
-This example is based on [Kubernetes Guestbook](https://github.com/kubernetes/examples/tree/master/guestbook). The application consists of :
+This example is based on [Kubernetes Guestbook](https://github.com/kubernetes/examples/tree/master/guestbook). The application consists of:
 
 * A Redis backend with a single leader pod for Writes & multiple follower pods for Reads
 * A frontend app ( Guestbook app ) in PHP loadbalanced to public using a load balancer
@@ -17,46 +16,352 @@ This example is based on [Kubernetes Guestbook](https://github.com/kubernetes/ex
 
 ![Screenshot](img/eks-stateless-app.png)
 
-## Create new cluster
+## Backend Deployment
+Our configuration files for Redis leader/followers includes both Deployment and Services kinds. Deployments and Services are often used in tandem: Deployments working to define the desired state of the application and Services working to make sure communication between almost any kind of resource and the rest of the cluster is stable and adaptable. 
 
-Please note that for the following steps we are assuming that the cluster is already running with nodegroup `ng-1` from initial steps
+### Redis leader
+For the Redis leader, first create the Deployment file `redis-leader-deployment.yaml`. Copy these contents to it : 
 ```
-eksctl create nodegroup --config-file=eks-cluster-autoscalar.yaml
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis
+    role: leader
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: leader
+        tier: backend
+    spec:
+      containers:
+      - name: leader
+        image: "docker.io/redis:6.0.5"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
 ```
+This tells EKS :
 
-## Redis master
-deploy the master Redis pod and a _service_ on top of it:
+* The deployment has replica of 1
+* Specifies the source of image 
+* Set resource requirement for cpu & memory
+* Set the container port to 6379
+
+Now let's create the Service on top of your deployment. Create file `redis-leader-service.yaml` and copy the following contents to it:
 ```
-kubectl apply -f redis-master.yaml
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-leader
+  labels:
+    app: redis
+    role: leader
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    role: leader
+    tier: backend
+```
+Notice that the metadata name and labels are same as the redis-leader Deployment. Here the target port that is exposed is set to 6379. 
+
+Now that the configuration files are defined, let's deploy the Redis leader pod :
+```
+kubectl apply -f redis-leader-deployment.yaml
+```
+Let's test by checking if the pods were created
+```
 kubectl get pods
-kubectl get services
 ```
+Now we apply Redis service on top of this :
+```
+kubectl apply -f redis-leader-service.yaml
+```
+Let's test using :
+```
+kubectl get service redis-leader
+```
+### Redis follower
+For the Redis follower, let's create the Deployment file `redis-followers-deployment.yaml`. Copy these contents to it : 
+```
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis
+    role: leader
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: leader
+        tier: backend
+    spec:
+      containers:
+      - name: leader
+        image: "docker.io/redis:6.0.5"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+```
+Just like before we will now create the Service file as `redis-follower-service.yaml`. Copy the following contents to it : 
+```
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-follower
+  labels:
+    app: redis
+    role: follower
+    tier: backend
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 6379
+  selector:
+    app: redis
+    role: follower
+    tier: backend
+```
+Notice the labels that match the Deployment file and the internal port that the redis follower service should run on. 
 
-## Redis slaves
-deploy the Redis slave pods and a _service_ on top of it:
+Now that the configuration files are defined, let's deploy the Redis follower pod :
 ```
-kubectl apply -f redis-slaves.yaml
-kubectl get pods
-kubectl get services
+kubectl apply -f redis-followers-deployment.yaml
+kubectl apply -f redis-follower-service.yaml
+```
+Let's check the status of Redis followers by running : 
+```
+kubectl get pods -o wide
+```
+```
+kubectl get service
+kubectl describe node <node-name>
 ```
 
 ## Frontend app
-deploy the PHP Frontend pods and a _service_ of type **LoadBalancer** on top of it, to expose the loadbalanced service to the public via ELB:
+Now we will deploy the frontend app that will consist of 
+
+* 3 replicas of the Guestbook App
+* ELB LoadBalancer service
+
+### Guestbook deployment
+We will start with defining the Deployment file for the frontend app. Create `frontend-deployment.yaml` and copy the following contents : 
 ```
-kubectl apply -f frontend.yaml
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: guestbook
+        tier: frontend
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google_samples/gb-frontend:v5
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
 ```
-some checks:
+This tells EKS to :
+
+* Generate 3 replicas of the frontend app
+* Specfiy image source
+* Set the container resources
+* Set the container port
+
+Let's apply the deployment 
+```
+kubectl apply -f frontend-deployment.yaml
+```
+Check all the pods for the guestbook app
 ```
 kubectl get pods
 kubectl get pods -l app=guestbook
 kubectl get pods -l app=guestbook -l tier=frontend
 ```
-check AWS mgm console for the ELB which has been created !!!
 
-## Access from outside the cluster
-grab the public DNS of the frontend service LoadBalancer (ELB):
+
+### Loadbalancer service
+We will now apply the loadbalancer service that allows us to expose all the loadbalanced service to the public. 
+
+Create file `frontend-service.yaml` and copy the following : 
+```
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  # type: LoadBalancer
+  type: LoadBalancer
+  ports:
+    # the port that this service should serve on
+  - port: 80
+  selector:
+    app: guestbook
+    tier: frontend
+```
+
+Let's apply the loadbalanced service
+```
+kubectl apply -f frontend-service.yaml
+```
+
+Check all services
+```
+kubectl get services
+kubectl get service frontend 
+kubetctl get pods -o wide
+kubectl describe service frontend
+```
+Finally check AWS mgm console for the ELB which has been created !
+
+### Access from outside the cluster
+
+Grab the public DNS of the frontend service LoadBalancer (ELB):
 ```
 kubectl describe service frontend
 ```
-copy the name and paste it into your browser !!!
+Copy the name and paste it into your browser !!!
+
+## Scale Pods up and down
+We can scale pods up and down in the following ways:
+
+* kubectl
+* Update YAML file
+
+### Using kubectl
+We can scale up and down using kubectl command. To scale up run the following command :  
+```
+kubectl scale deployment frontend --replicas=5
+```
+
+Let's check the pods now
+```
+kubectl get pods
+```
+Now let us scale it down
+```
+kubectl scale deployment frontend --replicas=3
+```
+You can check pods are terminating by checking the pods
+```
+kubectl get pods
+```
+### Using YAML file
+We can scale the pods by updating the replicas tag in our yaml files. Let's test this out by updating file `redis-followers-deployment.yaml`. Update the replicas count to 5 as follows :
+
+```
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+        app: guestbook
+        tier: frontend
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google_samples/gb-frontend:v5
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+```
+Let's apply the new deployment file
+```
+kubectl apply -f frontend-deployment.yaml
+```
+Let's check this by running
+```
+kubectl get deployment frontend
+kubectl get pods
+```
+## Perform chaos testing
+We will demonstrate self-healing mechanism of K8s by:
+
+* Kill pods
+* Stop K8s worker node(s)
+```
+kubectl get pods
+kubectl get nodes
+```
+```
+kubectl get pods -o wide
+```
+Now let's delete one of front-end pods
+```
+kubectl delete pod <frontend-pod>
+```
+Now check for pods look a the age column. Kubernetes restarts the pod
+```
+kubectl get pods -o wide
+```
+Now let's use AWS console to  stop any instance ( AWS > EC2 > instances). You will notice 2 things : 
+* Kubernetes will try to recover the nodes
+* Kubernetes will reshuffle the nodes if required 
 
