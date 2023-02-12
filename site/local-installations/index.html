@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/howtosteps/aws-eks/site/local-installations/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Local installations - Simple AWS EKS Example</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Local installations";
+        var mkdocs_page_input_path = "local-installations.md";
+        var mkdocs_page_url = "/howtosteps/aws-eks/site/local-installations/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Simple AWS EKS Example
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-environment/">Local environment</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Local installations</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#install-aws-cli">Install AWS CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#install-eksctl">Install eksctl</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#install-kubectl">Install kubectl</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster/">Create cluster</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../extend-cluster/">Extend cluster</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster-autoscaler/">Create cluster with autoscaler</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../test-cluster-autoscaler/">Test autoscaler with Nginx</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-stateless-app/">Create stateless app</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../clean-up/">Clean up</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Simple AWS EKS Example</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Local installations</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="local-installations">Local Installations</h1>
+<h2 id="install-aws-cli">Install AWS CLI</h2>
+<ul>
+<li>Follow the instructions from this page: <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">Installing or updating the latest version of the AWS CLI</a></li>
+<li>Test </li>
+</ul>
+<pre><code>    PS C:\Users\aniru\.aws&gt; aws --version
+    aws-cli/2.7.4 Python/3.9.11 Windows/10 exe/AMD64 prompt/off
+</code></pre>
+<h2 id="install-eksctl">Install eksctl</h2>
+<ul>
+<li>Follow the installation instructions from here : <a href="https://eksctl.io/introduction/#installation">eksctl installation</a></li>
+<li>Test</li>
+</ul>
+<pre><code>    PS C:\Users\aniru\.aws&gt; eksctl version  
+    0.99.0
+</code></pre>
+<h2 id="install-kubectl">Install kubectl</h2>
+<ul>
+<li>Follow instructions from here: <a href="https://kubernetes.io/docs/tasks/tools/">kubectl installation</a></li>
+<li>Test </li>
+</ul>
+<pre><code>    PS C:\Users\aniru\.aws&gt; kubectl version --client
+    Client Version: version.Info{Major:&quot;1&quot;, Minor:&quot;23&quot;, GitVersion:&quot;v1.23.6&quot;, GitCommit:&quot;ad3338546da947756e8a88aa6822e9c11e7eac22&quot;, GitTreeState:&quot;clean&quot;, BuildDate:&quot;2022-04-14T08:49:13Z&quot;, GoVersion:&quot;go1.17.9&quot;, Compiler:&quot;gc&quot;, Platform:&quot;windows/amd64&quot;}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../local-environment/" class="btn btn-neutral float-left" title="Local environment"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../create-cluster/" class="btn btn-neutral float-right" title="Create cluster">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../local-environment/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../create-cluster/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

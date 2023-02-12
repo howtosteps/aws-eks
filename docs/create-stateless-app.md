@@ -365,3 +365,12 @@ Now let's use AWS console to  stop any instance ( AWS > EC2 > instances). You wi
 * Kubernetes will try to recover the nodes
 * Kubernetes will reshuffle the nodes if required 
 
+## Cleaning up
+
+Run the following commands to save costs
+```
+kubectl delete deployment -l app=redis
+kubectl delete service -l app=redis
+kubectl delete deployment frontend
+kubectl delete service frontend
+```

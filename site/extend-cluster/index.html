@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/howtosteps/aws-eks/site/extend-cluster/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Extend cluster - Simple AWS EKS Example</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Extend cluster";
+        var mkdocs_page_input_path = "extend-cluster.md";
+        var mkdocs_page_url = "/howtosteps/aws-eks/site/extend-cluster/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Simple AWS EKS Example
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-environment/">Local environment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-installations/">Local installations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster/">Create cluster</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Extend cluster</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#define-yaml-file">Define Yaml file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#add-nodegroup">Add nodegroup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#delete-nodegroup">Delete nodegroup</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster-autoscaler/">Create cluster with autoscaler</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../test-cluster-autoscaler/">Test autoscaler with Nginx</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-stateless-app/">Create stateless app</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../clean-up/">Clean up</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Simple AWS EKS Example</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Extend cluster</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="extend-cluster">Extend Cluster</h1>
+<p>In this section we will extend the cluster by adding a nodegroup that contains a mix of:</p>
+<ul>
+<li>On-demand instances</li>
+<li>Spot instances</li>
+</ul>
+<h2 id="define-yaml-file">Define Yaml file</h2>
+<p>Create folder <code>cluster-ng-mixed</code>. We will now extend the cluster by adding a nodegroup to file <code>eks-cluster.yaml</code>. The file adds a new nodegroup <code>ng-mixed</code>. </p>
+<p>Copy the following contents :  </p>
+<pre><code>apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-cluster-ng
+  region: us-east-1
+
+nodeGroups:
+  - name: ng-1
+    instanceType: t2.nano
+    desiredCapacity: 2
+    ssh: # use existing EC2 key
+      publicKeyName: eks-course
+  - name: ng-mixed
+    minSize: 3
+    maxSize: 5
+    instancesDistribution:
+      maxPrice: 0.2
+      instanceTypes: [&quot;t2.small&quot;, &quot;t3.small&quot;]
+      onDemandBaseCapacity: 0
+      onDemandPercentageAboveBaseCapacity: 50
+    ssh: 
+      publicKeyName: eks-course
+
+</code></pre>
+<p>This tells EKS to : </p>
+<ul>
+<li>Add a new nodegroup <code>ng-mixed</code></li>
+<li>Set min &amp; max size</li>
+<li>Define the instance types</li>
+<li>50% of the instance types are on-demand and the rest on spot </li>
+</ul>
+<h2 id="add-nodegroup">Add nodegroup</h2>
+<p>First check your cluster is running :</p>
+<pre><code>eksctl get cluster
+</code></pre>
+<p>Let's add the new nodegroup :</p>
+<pre><code>eksctl create nodegroup --config-file=eks-cluster.yaml --include='ng-mixed'
+</code></pre>
+<h2 id="delete-nodegroup">Delete nodegroup</h2>
+<p>Now let's drain the <code>ng-mixed</code> nodegroup we just created so we don't incur additional costs :</p>
+<pre><code>eksctl delete nodegroup --config-file=eks-cluster.yaml --include='ng-mixed' --approve
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../create-cluster/" class="btn btn-neutral float-left" title="Create cluster"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../create-cluster-autoscaler/" class="btn btn-neutral float-right" title="Create cluster with autoscaler">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../create-cluster/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../create-cluster-autoscaler/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

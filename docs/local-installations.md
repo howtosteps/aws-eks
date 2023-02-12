@@ -9,7 +9,7 @@
 ```
 
 ## Install eksctl
-* Follow the installation instructions from here : [Eksctl installation](https://eksctl.io/introduction/#installation)
+* Follow the installation instructions from here : [eksctl installation](https://eksctl.io/introduction/#installation)
 * Test
 ```
     PS C:\Users\aniru\.aws> eksctl version  
@@ -17,7 +17,7 @@
 ```
 
 ## Install kubectl
-* Follow instructions from here: [Kuberctl installation](https://kubernetes.io/docs/tasks/tools/)
+* Follow instructions from here: [kubectl installation](https://kubernetes.io/docs/tasks/tools/)
 * Test 
 ```
     PS C:\Users\aniru\.aws> kubectl version --client

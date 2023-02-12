@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/howtosteps/aws-eks/site/create-cluster-autoscaler/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Create cluster with autoscaler - Simple AWS EKS Example</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Create cluster with autoscaler";
+        var mkdocs_page_input_path = "create-cluster-autoscaler.md";
+        var mkdocs_page_url = "/howtosteps/aws-eks/site/create-cluster-autoscaler/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Simple AWS EKS Example
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-environment/">Local environment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-installations/">Local installations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster/">Create cluster</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../extend-cluster/">Extend cluster</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Create cluster with autoscaler</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#create-cluster-nodegroups">Create cluster nodegroups</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-deployment-for-auto-scaler">Create deployment for auto-scaler</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#add-annotation-to-the-deployment">Add annotation to the deployment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#set-image-version-and-cluster-name">Set image version and cluster name</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../test-cluster-autoscaler/">Test autoscaler with Nginx</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-stateless-app/">Create stateless app</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../clean-up/">Clean up</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Simple AWS EKS Example</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Create cluster with autoscaler</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="create-cluster-with-autoscaler">Create cluster with autoscaler</h1>
+<p>In this section, we will create a autoscaler that allows us to dynamically scale the nodes within a nodegroup - in and out.  We will start by adding 3 new nodegroups to our existing cluster <code>eks-cluster-ng</code>: </p>
+<ul>
+<li><strong><em>scale-east1c</em></strong> : Represents on-demand instances of one instance type running on a single AZ for stateful workloads</li>
+<li><strong><em>scale-east1d</em></strong> : Represents on-demand instances of multiple instance types running on a single AZ for stateful workloads</li>
+<li><strong><em>scale-spot</em></strong> : represents spot instances running on multi AZ for stateless workloads</li>
+</ul>
+<p>The cluster auto-scaler automatically launches additional worker nodes if more resources are needed, and shutdowns worker nodes if they are under-utilized. The autoscaling works within a nodegroup, hence we will create a nodegroup first which has this feature enabled.</p>
+<p>Create folder <code>cluster-autoscaler</code>. Copy the following contents into file  <code>eks-cluster.yaml</code>:</p>
+<pre><code>apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eks-cluster-ng
+  region: us-east-1
+
+nodeGroups:
+  - name: scale-east1c
+    instanceType: t2.nano
+    desiredCapacity: 1
+    maxSize: 2
+    availabilityZones: [&quot;us-east-1c&quot;]
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+    labels:
+      nodegroup-type: stateful-east1c
+      instance-type: onDemand
+  - name: scale-east1d
+    instanceType: t2.nano
+    desiredCapacity: 1
+    maxSize: 3
+    availabilityZones: [&quot;us-east-1d&quot;]
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+    labels:
+      nodegroup-type: stateful-east1d
+      instance-type: onDemand
+    ssh: # use existing EC2 key
+      publicKeyName: eks-course
+  - name: scale-spot
+    desiredCapacity: 1
+    maxSize: 4
+    instancesDistribution:
+      instanceTypes: [&quot;t2.micro&quot;, &quot;t2.small&quot;]
+      onDemandBaseCapacity: 0
+      onDemandPercentageAboveBaseCapacity: 0
+    availabilityZones: [&quot;us-east-1a&quot;,&quot;us-east-1c&quot;]
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+    labels:
+      nodegroup-type: stateless-workload
+      instance-type: spot
+    ssh: 
+      publicKeyName: eks-course
+
+availabilityZones: [&quot;us-east-1a&quot;,&quot;us-east-1c&quot;, &quot;us-east-1d&quot;]
+</code></pre>
+<p>This will tell EKS to :</p>
+<ul>
+<li>Apply additional cluster configurations to cluster <code>eks-cluster-ng</code></li>
+<li>Apply defintions for 3 nodegroups :<ul>
+<li>scale-east1c : On-demand instances in us-east-1c</li>
+<li>scale-east1d : On-demand instances in us-east-1d</li>
+<li>scale-spot : Spot instances in us-east-1a, us-east-1b</li>
+</ul>
+</li>
+<li>Note the autoScaler property is set to <code>true</code></li>
+</ul>
+<h2 id="create-cluster-nodegroups">Create cluster nodegroups</h2>
+<p>We will now create the new nodegroups in our existing cluster</p>
+<pre><code>eksctl create nodegroup --config-file=eks-course.yaml
+</code></pre>
+<pre><code>kubectl get nodes
+</code></pre>
+<p>Let's delete the starter nodegroup <code>ng-1</code></p>
+<pre><code>eksctl delete nodegroup --cluster=eks-cluster-ng --name=ng-1 --approve
+</code></pre>
+<h2 id="create-deployment-for-auto-scaler">Create deployment for auto-scaler</h2>
+<p>Deploy the auto-scaler itself:</p>
+<pre><code>kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+</code></pre>
+<h2 id="add-annotation-to-the-deployment">Add annotation to the deployment</h2>
+<p>This prevents from being evicted</p>
+<pre><code>kubectl -n kube-system annotate deployment.apps/cluster-autoscaler cluster-autoscaler.kubernetes.io/safe-to-evict=&quot;false&quot;
+</code></pre>
+<h2 id="set-image-version-and-cluster-name">Set image version and cluster name</h2>
+<p>We will now set matching image version and cluster name <code>eks-cluster-ng</code> in the deployment. Get the autoscaler image version:  </p>
+<p>Open <a href="https://github.com/kubernetes/autoscaler/releases">Kubernetes/Autoscalar Releases</a> and get the latest release version matching your Kubernetes version, e.g. Kubernetes 1.14 =&gt; check for 1.14.n where "n" is the latest release version</p>
+<p>Edit deployment and set your EKS cluster name:</p>
+<pre><code>kubectl -n kube-system edit deployment.apps/cluster-autoscaler
+</code></pre>
+<ul>
+<li>set the image version at property <code>image=k8s.gcr.io/cluster-autoscaler:vx.yy.z</code>  </li>
+<li>set your EKS cluster name at the end of property <code>- --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/&lt;&lt;EKS cluster name&gt;&gt;</code></li>
+</ul>
+<pre><code>kubectl -n kube-system describe deployment cluster-autoscaler
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../extend-cluster/" class="btn btn-neutral float-left" title="Extend cluster"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../test-cluster-autoscaler/" class="btn btn-neutral float-right" title="Test autoscaler with Nginx">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../extend-cluster/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../test-cluster-autoscaler/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

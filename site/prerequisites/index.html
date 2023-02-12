@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/howtosteps/aws-eks/site/prerequisites/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Prerequisites - Simple AWS EKS Example</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Prerequisites";
+        var mkdocs_page_input_path = "prerequisites.md";
+        var mkdocs_page_url = "/howtosteps/aws-eks/site/prerequisites/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Simple AWS EKS Example
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Prerequisites</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#iam-user-and-permissions">IAM user and permissions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#create-policies">Create policies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#assign-policies">Assign policies</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-iam-role">Create IAM role</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-key-pair">Create key Pair</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-api-access-keysecret">Create API Access key/secret</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-environment/">Local environment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../local-installations/">Local installations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster/">Create cluster</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../extend-cluster/">Extend cluster</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-cluster-autoscaler/">Create cluster with autoscaler</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../test-cluster-autoscaler/">Test autoscaler with Nginx</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../create-stateless-app/">Create stateless app</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../clean-up/">Clean up</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Simple AWS EKS Example</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Prerequisites</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="prerequisites">Prerequisites</h1>
+<h2 id="iam-user-and-permissions">IAM user and permissions</h2>
+<p>We will create a new IAM user (<code>eks-user</code>) for the purposes of the tutorial. Please keep in mind that you should <em>never</em> use your root account for working with AWS services. </p>
+<h3 id="create-policies">Create policies</h3>
+<p>Create these 2 policies:</p>
+<ul>
+<li>EKS-Admin-policy:</li>
+</ul>
+<pre><code>    {
+        &quot;Version&quot;: &quot;2012-10-17&quot;,
+        &quot;Statement&quot;: [
+            {
+                &quot;Effect&quot;: &quot;Allow&quot;,
+                &quot;Action&quot;: [
+                    &quot;eks:*&quot;
+                ],
+                &quot;Resource&quot;: &quot;*&quot;
+            }
+        ]
+    }
+</code></pre>
+<ul>
+<li>CloudFormation-Admin-policy:</li>
+</ul>
+<pre><code>    {
+        &quot;Version&quot;: &quot;2012-10-17&quot;,
+        &quot;Statement&quot;: [
+            {
+                &quot;Effect&quot;: &quot;Allow&quot;,
+                &quot;Action&quot;: [
+                    &quot;cloudformation:*&quot;
+                ],
+                &quot;Resource&quot;: &quot;*&quot;
+            }
+        ]
+    }
+</code></pre>
+<h3 id="assign-policies">Assign policies</h3>
+<p>Finally, assign the following policies to your IAM user you are going to use throughout the course:</p>
+<ul>
+<li>AmazonEC2FullAccess</li>
+<li>IAMFullAccess</li>
+<li>AmazonVPCFullAccess</li>
+<li>CloudFormation-Admin-policy</li>
+<li>EKS-Admin-policy<br />
+where the last 2 policies are the ones you created above</li>
+</ul>
+<p><img alt="Screenshot" src="../img/aws-eks-iam-user.png" /></p>
+<h2 id="create-iam-role">Create IAM role</h2>
+<ul>
+<li>Open <code>https://console.aws.amazon.com/iam/</code> and choose <em>Roles</em> =&gt; <em>create role</em>  </li>
+<li>Choose <em>EKS</em> service followed by <em>Allows Amazon EKS to manage your clusters on your behalf</em>  </li>
+<li>Choose <em>Next: Permissions</em></li>
+<li>Click <em>Next: Review</em></li>
+<li>Enter a <em>unique</em> Role name, <em>EKS-course-role</em> and click <em><em>Create Role</em></em></li>
+</ul>
+<h2 id="create-key-pair">Create key Pair</h2>
+<ul>
+<li>Open EC2 dashboard <code>https://console.aws.amazon.com/ec2</code></li>
+<li>Click <em>KeyPairs</em> in left navigation bar under section "Network&amp;Security"</li>
+<li>Click <em>Create Key Pair</em></li>
+<li>Provide name for keypair, <em>eks-course</em> and click <em><em>Create</em></em><ul>
+<li>The keypair will be downloaded immediately =&gt; file <em>eks-course.pem</em></li>
+</ul>
+</li>
+</ul>
+<h2 id="create-api-access-keysecret">Create API Access key/secret</h2>
+<ul>
+<li>Create key+secret via AWS console
+  AWS-console =&gt; IAM =&gt; Users =&gt; <eks-user> =&gt; tab <em>Security credentials</em> =&gt; button <em>Create access key</em></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../local-environment/" class="btn btn-neutral float-right" title="Local environment">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../local-environment/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
