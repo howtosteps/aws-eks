@@ -2,52 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/clean-up/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/create-cluster-autoscaler/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/create-cluster/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/create-stateless-app/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/extend-cluster/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/local-environment/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/local-installations/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/prerequisites/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.com/howtosteps/aws-eks/site/test-cluster-autoscaler/</loc>
-         <lastmod>2023-02-12</lastmod>
+         <lastmod>2023-02-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

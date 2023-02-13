@@ -118,25 +118,29 @@
 <li>How to setup a stateless application</li>
 </ul>
 <h2 id="application-structure">Application Structure</h2>
-<pre><code>  |── docs                      # folder contains all the mkdocs files
-  |    ├── img                  # Contains all images referenced in mkdocs
-  |    ├── *.md                 # Other mkdocs .md files
-  ├── mkdocs.yml                # Yaml for for mkdocs
+<pre><code>  |── docs                                  # Folder contains all the mkdocs files
+  |    ├── img                              # Contains all images referenced in mkdocs
+  |    ├── *.md                             # Other mkdocs .md files
+  ├── mkdocs.yml                            # Yaml for for mkdocs
   ├── .gitattributes
   |
-  |── cluster-ng                        # Folder containing a simple EKS cluster with on-demand instances
-  |    ├── eks-cluster.yaml             # Yaml file for a simple cluster
-  |    ├── eks-cluster-cmds.md          # List of commands to run 
-  |── cluster-ng-mixed                  # Folder containing an EKS cluster with spot &amp; on-demand instances
-  |    ├── eks-cluster.yaml             # Yaml file for cluster with different node groups
-  |── cluster-autoscaler                # folder containing a EKS cluster with auto-scaler
-  |    ├── eks-cluster.yaml             # Yaml file for a simple cluster
-  |    ├── eks-cluster-cmds.md          # List of commands to run 
-  |── cluster-stateless-app             # Folder containing a simple stateless example from kubernetes.io
-  |    ├── frontend-deployment.yaml     # Yaml file for frontend deployment
-  |    ├── frontend-service.yaml        # Yaml file for frontend service
-  |
-  ├── README.md                 # Standard README.md file
+  |── cluster-ng                            # Folder containing a simple EKS cluster with on-demand instances
+  |    ├── eks-cluster.yaml                 # Yaml file for a simple cluster
+  |    ├── eks-cluster-cmds.md              # List of commands to run 
+  |── cluster-ng-mixed                      # Folder containing an EKS cluster with spot &amp; on-demand instances
+  |    ├── eks-cluster.yaml                 # Yaml file for cluster with different node groups
+  |── cluster-autoscaler                    # Folder containing a EKS cluster with auto-scaler
+  |    ├── eks-cluster.yaml                 # Yaml file for a simple cluster
+  |    ├── eks-cluster-cmds.md              # List of commands to run 
+  |── cluster-stateless-app                 # Folder containing a simple stateless example from kubernetes.io
+  |    ├── frontend-deployment.yaml         # Yaml file for frontend deployment
+  |    ├── frontend-service.yaml            # Yaml file for frontend service
+  |    ├── redis-leader-deployment.yaml     # Yaml file for frontend deployment
+  |    ├── redis-leader-service.yaml        # Yaml file for frontend service
+  |    ├── redis-followers-deployment.yaml  # Yaml file for frontend deployment
+  |    ├── redis-follower-service.yaml      # Yaml file for frontend service
+  |    ├── cluster-stateless-app-cmds.md    # List of commands to run
+  ├── README.md                             # Standard README.md file
 </code></pre>
 <h2 id="credits">Credits</h2>
 <p>Although much of the material has been sources from various sources on the web ( including ChatGPT ), I did find this Udemy tutorial very useful in crafting these how-to-steps :</p>
@@ -188,5 +192,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-02-12 10:29:23.469208+00:00
+Build Date UTC : 2023-02-13 14:08:40.023546+00:00
 -->
