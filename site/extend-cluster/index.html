@@ -156,12 +156,42 @@ nodeGroups:
 <p>First check your cluster is running :</p>
 <pre><code>eksctl get cluster
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-ng&gt; eksctl get cluster
+NAME            REGION          EKSCTL CREATED
+eks-cluster-ng  us-east-1       True
+</code></pre>
 <p>Let's add the new nodegroup :</p>
 <pre><code>eksctl create nodegroup --config-file=eks-cluster.yaml --include='ng-mixed'
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-ng-mixed&gt; eksctl create nodegroup --config-file=eks-cluster.yaml --include='ng-mixed'
+2023-02-14 03:25:59 [ℹ]  will use version 1.23 for new nodegroup(s) based on control plane version
+2023-02-14 03:26:06 [ℹ]  nodegroup &quot;ng-1&quot; will use &quot;ami-0d4bdb1cf2f07d811&quot; [AmazonLinux2/1.23]
+2023-02-14 03:26:07 [ℹ]  using EC2 key pair &quot;eks-course&quot;
+2023-02-14 03:26:07 [ℹ]  nodegroup &quot;ng-mixed&quot; will use &quot;ami-0d4bdb1cf2f07d811&quot; [AmazonLinux2/1.23]
+2023-02-14 03:26:08 [ℹ]  using EC2 key pair &quot;eks-course&quot;
+2023-02-14 03:26:11 [ℹ]  1 existing nodegroup(s) (ng-1) will be excluded
+2023-02-14 03:26:11 [ℹ]  combined include rules: ng-mixed
+2023-02-14 03:26:11 [ℹ]  1 nodegroup (ng-mixed) was included (based on the include/exclude rules)
+2023-02-14 03:26:11 [ℹ]  will create a CloudFormation stack for each of 1 nodegroups in cluster &quot;eks-cluster-ng&quot;
+</code></pre>
+<p>Note line <strong><em>combined include rules: ng-mixed</em></strong></p>
+<p>Also check the new nodegroup <code>ng-mixed</code> created after a few minutes by running below command. Check min size and max size  : </p>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks&gt; eksctl get nodegroup --cluster=eks-cluster-ng
+CLUSTER         NODEGROUP       STATUS          CREATED                 MIN SIZE        MAX SIZE        DESIRED CAPACITY        INSTANCE TYPE   IMAGE ID           ASG NAME                                                         TYPE
+eks-cluster-ng  ng-1            CREATE_COMPLETE 2023-02-14T07:23:00Z    2               2               2                       t2.nano         ami-0d4bdb1cf2f07d811       eksctl-eks-cluster-ng-nodegroup-ng-1-NodeGroup-1LRT8H4ZKAVO9            unmanaged
+eks-cluster-ng  ng-mixed        CREATE_COMPLETE 2023-02-14T08:26:13Z    3               5               3                       t2.small        ami-0d4bdb1cf2f07d811       eksctl-eks-cluster-ng-nodegroup-ng-mixed-NodeGroup-1I8YSGYWKO2O5        unmanaged
+</code></pre>
+<p>You can also review this on AWS console :</p>
+<p><img alt="Screenshot" src="../img/eks-cluster-ng-mixed.jpg" /></p>
 <h2 id="delete-nodegroup">Delete nodegroup</h2>
 <p>Now let's drain the <code>ng-mixed</code> nodegroup we just created so we don't incur additional costs :</p>
 <pre><code>eksctl delete nodegroup --config-file=eks-cluster.yaml --include='ng-mixed' --approve
+</code></pre>
+<p>The draining will usually take some time as is indicated by <strong><em>STATUS=DELETE_IN_PROGRESS</em></strong>:</p>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks&gt; eksctl get nodegroup --cluster=eks-cluster-ng
+CLUSTER         NODEGROUP       STATUS                  CREATED                 MIN SIZE        MAX SIZE        DESIRED CAPACITY        INSTANCE TYPE   IMAGE ID   ASG NAME                                                         TYPE
+eks-cluster-ng  ng-1            CREATE_COMPLETE         2023-02-14T07:23:00Z    2               2               2                       t2.nano         ami-0d4bdb1cf2f07d811       eksctl-eks-cluster-ng-nodegroup-ng-1-NodeGroup-1LRT8H4ZKAVO9            unmanaged
+eks-cluster-ng  ng-mixed        DELETE_IN_PROGRESS      2023-02-14T08:26:13Z    0               0               0                       t2.small        ami-0d4bdb1cf2f07d811       eksctl-eks-cluster-ng-nodegroup-ng-mixed-NodeGroup-1I8YSGYWKO2O5        unmanaged
 </code></pre>
               
             </div>

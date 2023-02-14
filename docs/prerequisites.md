@@ -1,7 +1,7 @@
 # Prerequisites
 
 ## IAM user and permissions
-We will create a new IAM user (`eks-user`) for the purposes of the tutorial. Please keep in mind that you should *never* use your root account for working with AWS services. 
+We will create a new IAM user (`eks-<user-name>`) for the purposes of the tutorial. Please keep in mind that you should *never* use your root account for working with AWS services. 
 
 ### Create policies
 Create these 2 policies:

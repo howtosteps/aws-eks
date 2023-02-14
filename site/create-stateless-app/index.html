@@ -156,6 +156,11 @@
 <p><img alt="Screenshot" src="../img/eks-stateless-app.png" /></p>
 <h2 id="backend-deployment">Backend Deployment</h2>
 <p>Our configuration files for Redis leader/followers includes both Deployment and Services kinds. Deployments and Services are often used in tandem: Deployments working to define the desired state of the application and Services working to make sure communication between almost any kind of resource and the rest of the cluster is stable and adaptable. </p>
+<p>For the purpose of this application we will scale our nodegroup <code>scale-spot</code> to 3 instances</p>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; eksctl scale nodegroup --cluster=eks-cluster-ng --nodes=3 --nodes-max=4 --name=scale-spot
+2023-02-14 10:22:58 [ℹ]  scaling nodegroup &quot;scale-spot&quot; in cluster eks-cluster-ng
+2023-02-14 10:23:02 [ℹ]  nodegroup successfully scaled
+</code></pre>
 <h3 id="redis-leader">Redis leader</h3>
 <p>For the Redis leader, first create the Deployment file <code>redis-leader-deployment.yaml</code>. Copy these contents to it : </p>
 <pre><code># SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
@@ -222,11 +227,20 @@ spec:
 <p>Let's test by checking if the pods were created</p>
 <pre><code>kubectl get pods
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pod 
+NAME                               READY   STATUS    RESTARTS   AGE
+redis-leader-766465cd9c-wh94g      1/1     Running   0          46s
+test-autoscaler-6545fc8df4-7pktn   0/1     Pending   0          66m
+</code></pre>
 <p>Now we apply Redis service on top of this :</p>
 <pre><code>kubectl apply -f redis-leader-service.yaml
 </code></pre>
 <p>Let's test using :</p>
 <pre><code>kubectl get service redis-leader
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get service redis-leader
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+redis-leader   ClusterIP   10.100.232.230   &lt;none&gt;        6379/TCP   11s
 </code></pre>
 <h3 id="redis-follower">Redis follower</h3>
 <p>For the Redis follower, let's create the Deployment file <code>redis-followers-deployment.yaml</code>. Copy these contents to it : </p>
@@ -234,13 +248,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-leader
+  name: redis-follower
   labels:
     app: redis
-    role: leader
+    role: follower
     tier: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: redis
@@ -248,12 +262,12 @@ spec:
     metadata:
       labels:
         app: redis
-        role: leader
+        role: follower
         tier: backend
     spec:
       containers:
-      - name: leader
-        image: &quot;docker.io/redis:6.0.5&quot;
+      - name: follower
+        image: gcr.io/google_samples/gb-redis-follower:v2
         resources:
           requests:
             cpu: 100m
@@ -289,7 +303,14 @@ kubectl apply -f redis-follower-service.yaml
 <pre><code>kubectl get pods -o wide
 </code></pre>
 <pre><code>kubectl get service
-kubectl describe node &lt;node-name&gt;
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get service
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+kubernetes       ClusterIP   10.100.0.1       &lt;none&gt;        443/TCP    7h40m
+redis-follower   ClusterIP   10.100.249.155   &lt;none&gt;        6379/TCP   41m
+redis-leader     ClusterIP   10.100.232.230   &lt;none&gt;        6379/TCP   42m
+</code></pre>
+<pre><code>kubectl describe node &lt;node-name&gt;
 </code></pre>
 <h2 id="frontend-app">Frontend app</h2>
 <p>Now we will deploy the frontend app that will consist of </p>
@@ -344,6 +365,12 @@ spec:
 kubectl get pods -l app=guestbook
 kubectl get pods -l app=guestbook -l tier=frontend
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods -l app=guestbook -l tier=frontend
+NAME                        READY   STATUS    RESTARTS   AGE
+frontend-57df59b89c-5rkzr   1/1     Running   0          28m
+frontend-57df59b89c-f26lm   1/1     Running   0          28m
+frontend-57df59b89c-s7n2s   1/1     Running   0          28m
+</code></pre>
 <h3 id="loadbalancer-service">Loadbalancer service</h3>
 <p>We will now apply the loadbalancer service that allows us to expose all the loadbalanced service to the public. </p>
 <p>Create file <code>frontend-service.yaml</code> and copy the following : </p>
@@ -376,7 +403,11 @@ kubectl get service frontend
 kubetctl get pods -o wide
 kubectl describe service frontend
 </code></pre>
-<p>Finally check AWS mgm console for the ELB which has been created !</p>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get service frontend
+NAME       TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)        AGE
+frontend   LoadBalancer   10.100.141.207   ab8f47054a1bb400f8700134e4410f1c-1044573003.us-east-1.elb.amazonaws.com   80:30074/TCP   91s
+</code></pre>
+<p>Finally check AWS mgmt console for the ELB which has been created !</p>
 <h3 id="access-from-outside-the-cluster">Access from outside the cluster</h3>
 <p>Grab the public DNS of the frontend service LoadBalancer (ELB):</p>
 <pre><code>kubectl describe service frontend
@@ -392,11 +423,33 @@ kubectl describe service frontend
 <p>We can scale up and down using kubectl command. To scale up run the following command :  </p>
 <pre><code>kubectl scale deployment frontend --replicas=5
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+frontend-57df59b89c-5rkzr          1/1     Running   0          37m
+frontend-57df59b89c-f26lm          1/1     Running   0          37m
+frontend-57df59b89c-rhwrv          0/1     Pending   0          5s
+frontend-57df59b89c-s7n2s          1/1     Running   0          37m
+frontend-57df59b89c-xxjll          1/1     Running   0          5s
+redis-follower-84fcc94dfc-2k2pn    1/1     Running   0          91m
+redis-follower-84fcc94dfc-k6d2t    1/1     Running   0          91m
+redis-leader-766465cd9c-wh94g      1/1     Running   0          93m
+test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          76m
+</code></pre>
 <p>Let's check the pods now</p>
 <pre><code>kubectl get pods
 </code></pre>
 <p>Now let us scale it down</p>
 <pre><code>kubectl scale deployment frontend --replicas=3
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+frontend-57df59b89c-5rkzr          1/1     Running   0          38m
+frontend-57df59b89c-f26lm          1/1     Running   0          38m
+frontend-57df59b89c-s7n2s          1/1     Running   0          38m
+redis-follower-84fcc94dfc-2k2pn    1/1     Running   0          92m
+redis-follower-84fcc94dfc-k6d2t    1/1     Running   0          92m
+redis-leader-766465cd9c-wh94g      1/1     Running   0          94m
+test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          76m
 </code></pre>
 <p>You can check pods are terminating by checking the pods</p>
 <pre><code>kubectl get pods
@@ -434,11 +487,28 @@ spec:
         - containerPort: 80
 </code></pre>
 <p>Let's apply the new deployment file</p>
-<pre><code>kubectl apply -f frontend-deployment.yaml
+<pre><code>kubectl apply -f redis-followers-deployment.yaml
 </code></pre>
 <p>Let's check this by running</p>
-<pre><code>kubectl get deployment frontend
+<pre><code>kubectl get deployment redis-follower
 kubectl get pods
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get deployment redis-follower
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+redis-follower   5/5     5            5           99m
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+frontend-57df59b89c-5rkzr          1/1     Running   0          42m
+frontend-57df59b89c-f26lm          1/1     Running   0          42m
+frontend-57df59b89c-s7n2s          1/1     Running   0          42m
+redis-follower-84fcc94dfc-2k2pn    1/1     Running   0          95m
+redis-follower-84fcc94dfc-5fvt6    1/1     Running   0          31s
+redis-follower-84fcc94dfc-k6d2t    1/1     Running   0          95m
+redis-follower-84fcc94dfc-s6mcd    1/1     Running   0          31s
+redis-follower-84fcc94dfc-v4bcx    1/1     Running   0          31s
+redis-leader-766465cd9c-wh94g      1/1     Running   0          98m
+test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          80m
 </code></pre>
 <h2 id="perform-chaos-testing">Perform chaos testing</h2>
 <p>We will demonstrate self-healing mechanism of K8s by:</p>
@@ -457,6 +527,21 @@ kubectl get nodes
 <p>Now check for pods look a the age column. Kubernetes restarts the pod</p>
 <pre><code>kubectl get pods -o wide
 </code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl delete pod redis-follower-84fcc94dfc-k6d2t
+pod &quot;redis-follower-84fcc94dfc-k6d2t&quot; deleted
+PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+frontend-57df59b89c-5rkzr          1/1     Running   0          54m
+frontend-57df59b89c-f26lm          1/1     Running   0          54m
+frontend-57df59b89c-s7n2s          1/1     Running   0          54m
+redis-follower-84fcc94dfc-2k2pn    1/1     Running   0          107m
+redis-follower-84fcc94dfc-4wn4v    1/1     Running   0          87s
+redis-follower-84fcc94dfc-5fvt6    1/1     Running   0          12m
+redis-follower-84fcc94dfc-s6mcd    1/1     Running   0          12m
+redis-follower-84fcc94dfc-v4bcx    1/1     Running   0          12m
+redis-leader-766465cd9c-wh94g      1/1     Running   0          110m
+test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          92m
+</code></pre>
 <p>Now let's use AWS console to  stop any instance ( AWS &gt; EC2 &gt; instances). You will notice 2 things : 
 * Kubernetes will try to recover the nodes
 * Kubernetes will reshuffle the nodes if required </p>
@@ -466,6 +551,10 @@ kubectl get nodes
 kubectl delete service -l app=redis
 kubectl delete deployment frontend
 kubectl delete service frontend
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-stateless-app&gt; kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          97m
 </code></pre>
               
             </div>

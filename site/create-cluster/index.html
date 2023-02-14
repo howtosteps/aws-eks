@@ -146,6 +146,8 @@ nodeGroups:
 <h2 id="check-cluster">Check cluster</h2>
 <p>Now let's check the EC2 console. You will see 2 instances :</p>
 <p><img alt="Screenshot" src="../img/eks-cluster-ec2-instance.jpg" /></p>
+<p>You can also see VPCs &amp; Security groups created by cloud formation service :
+<img alt="Screenshot" src="../img/eks-cluster-ng-security-groups.png" /></p>
 <p>Let's use the <code>eksctl get nodegroup</code> command to get the details of the nodegroup we just created  : </p>
 <pre><code>eksctl get nodegroup --cluster eks-cluster-ng
 </code></pre>

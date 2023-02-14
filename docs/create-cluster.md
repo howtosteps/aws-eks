@@ -46,11 +46,15 @@ Now let's check the EC2 console. You will see 2 instances :
 
 ![Screenshot](img/eks-cluster-ec2-instance.jpg)
 
+
+You can also see VPCs & Security groups created by cloud formation service :
+![Screenshot](img/eks-cluster-ng-security-groups.png)
+
+
 Let's use the `eksctl get nodegroup` command to get the details of the nodegroup we just created  : 
 ```
 eksctl get nodegroup --cluster eks-cluster-ng
 ```
-
 ```
 S C:\Users\aniru\workspace\github\aws-eks> eksctl get nodegroup --cluster eks-cluster-ng
 CLUSTER         NODEGROUP       STATUS          CREATED                 MIN SIZE        MAX SIZE        DESIRED CAPACITY        INSTANCE TYPE   IMAGE ID                ASG NAME                                       TYPE
@@ -61,7 +65,6 @@ Let's use the `kubectl` command to get the nodes :
 ```
 kubectl get nodes
 ```
-
 ```
 PS C:\Users\aniru\workspace\github\aws-eks> kubectl get nodes
 Kubeconfig user entry is using deprecated API version client.authentication.k8s.io/v1alpha1. Run 'aws eks update-kubeconfig' to update.

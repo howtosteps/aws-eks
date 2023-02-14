@@ -144,10 +144,10 @@ spec:
         resources:
           limits:
             cpu: 300m
-            memory: 512Mi
+            memory: 256Mi
           requests:
             cpu: 300m
-            memory: 512Mi
+            memory: 256Mi
       nodeSelector:
         instance-type: spot
 </code></pre>
@@ -166,22 +166,52 @@ spec:
 <p>Now check if the pod is running</p>
 <pre><code>kubectl get pod
 </code></pre>
+<pre><code>S C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get pod
+NAME                               READY   STATUS    RESTARTS   AGE
+test-autoscaler-6545fc8df4-7pktn   0/1     Pending   0          22s
+</code></pre>
 <p>check the instance types </p>
 <pre><code>kubectl get nodes -l instance-type=spot
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get nodes -l instance-type=spot
+NAME                            STATUS   ROLES    AGE    VERSION
+ip-192-168-12-53.ec2.internal   Ready    &lt;none&gt;   8m5s   v1.23.15-eks-49d8fe8
 </code></pre>
 <h2 id="scale-the-deployment">Scale the deployment</h2>
 <p>Let's scale deployment to 3 replicas so we can test the autoscaler</p>
 <pre><code>kubectl scale --replicas=3 deployment/test-autoscaler
 </code></pre>
+<pre><code>S C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl scale --replicas=3 deployment/test-autoscaler
+deployment.apps/test-autoscaler scaled
+</code></pre>
 <p>You should see 3 pods running now but using the same node </p>
 <pre><code>kubectl get pod
+</code></pre>
+<pre><code>S C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get pod
+NAME                               READY   STATUS    RESTARTS   AGE
+test-autoscaler-6545fc8df4-6qk5f   0/1     Pending   0          33s
+test-autoscaler-6545fc8df4-7pktn   0/1     Pending   0          6m12s
+test-autoscaler-6545fc8df4-hmrxd   0/1     Pending   0          33s
+</code></pre>
+<pre><code>kubectl get nodes -l instance-type=spot
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get nodes -l instance-type=spot
+NAME                            STATUS   ROLES    AGE   VERSION
+ip-192-168-12-53.ec2.internal   Ready    &lt;none&gt;   15m   v1.23.15-eks-49d8fe8
 </code></pre>
 <h3 id="scale-out-the-deployment">Scale-out the deployment</h3>
 <p>Let's test scale-out by increasing the number of replicas to 4</p>
 <pre><code>kubectl scale --replicas=4 deployment/test-autoscaler
 </code></pre>
 <p>Now check the pods </p>
-<pre><code>kubectl get pods -o wide --watch
+<pre><code>kubectl get pods -o wide
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get pods -o wide --watch
+NAME                               READY   STATUS    RESTARTS   AGE     IP       NODE     NOMINATED NODE   READINESS GATES
+test-autoscaler-6545fc8df4-6qk5f   0/1     Pending   0          4m39s   &lt;none&gt;   &lt;none&gt;   &lt;none&gt;           &lt;none&gt;
+test-autoscaler-6545fc8df4-7pktn   0/1     Pending   0          10m     &lt;none&gt;   &lt;none&gt;   &lt;none&gt;           &lt;none&gt;
+test-autoscaler-6545fc8df4-hmrxd   0/1     Pending   0          4m39s   &lt;none&gt;   &lt;none&gt;   &lt;none&gt;           &lt;none&gt;
+test-autoscaler-6545fc8df4-kfqg4   0/1     Pending   0          13s     &lt;none&gt;   &lt;none&gt;   &lt;none&gt;           &lt;none&gt;
 </code></pre>
 <p>And let's check the # of instances. It should increase to accomodate the increased # of replicas</p>
 <pre><code>kubectl get nodes -l instance-type=spot
@@ -192,7 +222,13 @@ spec:
 <pre><code>kubectl scale --replicas=1 deployment/test-autoscaler
 </code></pre>
 <p>Now check the pods </p>
-<pre><code>kubectl get pods -o wide --watch
+<pre><code>kubectl get pod
+</code></pre>
+<pre><code>PS C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl scale --replicas=1 deployment/test-autoscaler 
+deployment.apps/test-autoscaler scaled
+PS C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl get pod
+NAME                               READY   STATUS    RESTARTS   AGE
+test-autoscaler-6545fc8df4-7pktn   0/1     Pending   0          21m
 </code></pre>
 <p>And let's check the # of instances. It should increase to accomodate the increased # of replicas</p>
 <pre><code>kubectl get nodes -l instance-type=spot
@@ -200,6 +236,9 @@ spec:
 <p>Now check page <code>EC2 &gt; Instances &gt; Spot Requests</code> on AWS Console after a few minutes. Also check page <code>EC2 &gt; Auto Scaling Groups</code></p>
 <h3 id="check-logs">Check logs</h3>
 <pre><code>kubectl -n kube-system logs deployment.apps/cluster-autoscaler
+</code></pre>
+<pre><code>S C:\Users\aniru\workspace\github\aws-eks\cluster-autoscaler&gt; kubectl -n kube-system logs deployment.apps/cluster-autoscaler
+Found 2 pods, using pod/cluster-autoscaler-c5bf8cc8-glhlr
 </code></pre>
               
             </div>

@@ -6,27 +6,27 @@ metadata:
   region: us-east-1
 
 nodeGroups:
-  - name: scale-east1c
+  - name: scale-east1b
     instanceType: t2.nano
     desiredCapacity: 1
     maxSize: 2
+    availabilityZones: ["us-east-1b"]
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+    labels:
+      nodegroup-type: stateful-east1b
+      instance-type: onDemand
+  - name: scale-east1c
+    instanceType: t2.micro
+    desiredCapacity: 1
+    maxSize: 3
     availabilityZones: ["us-east-1c"]
     iam:
       withAddonPolicies:
         autoScaler: true
     labels:
       nodegroup-type: stateful-east1c
-      instance-type: onDemand
-  - name: scale-east1d
-    instanceType: t2.nano
-    desiredCapacity: 1
-    maxSize: 3
-    availabilityZones: ["us-east-1d"]
-    iam:
-      withAddonPolicies:
-        autoScaler: true
-    labels:
-      nodegroup-type: stateful-east1d
       instance-type: onDemand
     ssh: # use existing EC2 key
       publicKeyName: eks-course
@@ -37,7 +37,7 @@ nodeGroups:
       instanceTypes: ["t2.micro", "t2.small"]
       onDemandBaseCapacity: 0
       onDemandPercentageAboveBaseCapacity: 0
-    availabilityZones: ["us-east-1a","us-east-1c"]
+    availabilityZones: ["us-east-1b","us-east-1c"]
     iam:
       withAddonPolicies:
         autoScaler: true
@@ -47,4 +47,4 @@ nodeGroups:
     ssh: 
       publicKeyName: eks-course
 
-availabilityZones: ["us-east-1a","us-east-1c", "us-east-1d"]
+availabilityZones: ["us-east-1b","us-east-1c"]
