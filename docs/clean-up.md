@@ -1,6 +1,6 @@
 ## Cleaning Up
 
-For clean up, first ensure all applications are undeployed using 
+For clean up, all applications are undeployed using 
 ```
 kubectl delete -f <app-deployment-file>
 kubectl delete -f <app-service-file>
