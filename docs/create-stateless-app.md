@@ -457,7 +457,8 @@ redis-follower-84fcc94dfc-v4bcx    1/1     Running   0          12m
 redis-leader-766465cd9c-wh94g      1/1     Running   0          110m
 test-autoscaler-59c78f9974-7jn9n   1/1     Running   0          92m
 ```
-Now let's use AWS console to  stop any instance ( AWS > EC2 > instances). You will notice 2 things : 
+Now let's use AWS console to  stop any instance ( AWS > EC2 > instances). You will notice 2 things :
+
 * Kubernetes will try to recover the nodes
 * Kubernetes will reshuffle the nodes if required 
 
