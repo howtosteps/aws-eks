@@ -6,3 +6,6 @@ This tutorial describes how-to-steps to setup a simple EKS cluster. This tutoria
 * How to add new nodegroups
 * How to add autoscaler to dynamically scale in and out
 * How to setup a stateless application
+
+# How-to tutorials
+[how to setup a simple EKS cluster](https://howtosteps.github.io/aws-eks/site/)
