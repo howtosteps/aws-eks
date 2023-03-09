@@ -11,4 +11,22 @@ nav:
   - Test autoscaler with Nginx : test-cluster-autoscaler.md
   - Create stateless app: create-stateless-app.md
   - Clean up : clean-up.md
-theme: readthedocs
+theme: 
+  name: material
+  features:
+    - content.code.copy
+
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
