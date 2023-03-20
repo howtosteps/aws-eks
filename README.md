@@ -1,5 +1,4 @@
 # AWS EKS Starter
-
 This is a starter tutorial on how-to setup a simple EKS cluster. This tutorial will provide steps for following:
 
 * How to setup a simple kubernetes cluster using eksctl
